@@ -5,11 +5,12 @@ import shutil
 dataset_path = input('Dataset path: ')
 out_dir = input('Out directory: ')
 
-assert os.path.exists(dataset_path), f'Path {dataset_path} does not exist'
+assert out_dir != '', f'Dataset path cannot be blank'
 assert out_dir != '', f'Out directory cannot be blank'
+assert os.path.exists(dataset_path), f'Path {dataset_path} does not exist'
 
 classes = os.listdir(dataset_path)
-print('Classes:', classes)
+
 for index, obj_class in enumerate(classes):
     data_types = ['Train', 'Test']
 
@@ -71,3 +72,14 @@ for index, obj_class in enumerate(classes):
             shutil.copy2(img_path, out_image_path)
 
             xml_file.close()
+
+print('Generating training configuration file (train-config.yaml)')
+# generate training config
+with open('train-config.yaml', 'w') as f:
+    f.write(f'path: {out_dir}  # dataset root dir\n')
+    f.write('train: Train/images  # train images (relative to "path")\n')
+    f.write('val: Test/images  # val images (relative to "path")\n')
+    f.write('test: Test/images # test images (optional)\n\n')
+
+    f.write(f'nc: {len(classes)}  # number of classes\n')
+    f.write(f'names: {classes} # class names\n')
