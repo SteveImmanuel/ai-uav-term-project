@@ -58,7 +58,7 @@ A new file `train-config.yaml` will be automatically generated in the project di
 # Training
 For training, it is recommended to use pretrained weights. Type the following:
 ```
-python train.py --img 800 --batch 32 --epochs 300 --data dataset-sm.yaml --weights yolov5s.pt
+python train.py --img 800 --batch 32 --epochs 300 --data train-config.yaml --weights yolov5s.pt
 ```
 Adjust the batch size and image dimension according to your system specification if you run out of memory.
 
