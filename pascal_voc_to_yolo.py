@@ -2,6 +2,9 @@ import os
 import xml.etree.ElementTree as ET
 import shutil
 
+SUPPORTED_EXT = ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.tiff']
+SUPPORTED_EXT += [ext.upper() for ext in SUPPORTED_EXT]
+
 dataset_path = input('Dataset path: ')
 out_dir = input('Out directory: ')
 
@@ -17,42 +20,45 @@ for index, obj_class in enumerate(classes):
     for data_type in data_types:
         out_dir_images = os.path.join(out_dir, data_type, 'images')
         out_dir_labels = os.path.join(out_dir, data_type, 'labels')
-        image_dir_path = os.path.join(dataset_path, obj_class, data_type, 'Images')
-        lbl_dir_path = os.path.join(dataset_path, obj_class, data_type, 'Labels')
+        data_dir_path = os.path.join(dataset_path, obj_class, data_type)
 
         os.makedirs(out_dir_images, exist_ok=True)
         os.makedirs(out_dir_labels, exist_ok=True)
 
-        assert os.path.exists(lbl_dir_path), f'Path {lbl_dir_path} does not exist'
-        assert os.path.exists(lbl_dir_path), f'Path {image_dir_path} does not exist'
+        assert os.path.exists(data_dir_path), f'Path {data_dir_path} does not exist'
 
-        labels = os.listdir(lbl_dir_path)
-        print(f'Found {len(labels)} labels in {data_type}/{obj_class}')
+        labels = [item for item in os.listdir(data_dir_path) if item.endswith('.xml')]
+        images = [item for item in os.listdir(data_dir_path) if not item.endswith('.xml')]
+
+        assert len(labels) == len(images), f'Number of labels and images do not match, labels: {len(labels)}, images: {len(images)}'
+        print(f'Found {len(labels)} datapoints in {data_type}/{obj_class}')
 
         for label in labels:
-            lbl_path = os.path.join(lbl_dir_path, label)
-            lbl_name, ext = os.path.splitext(label)
+            lbl_path = os.path.join(data_dir_path, label)
+            lbl_name, _ = os.path.splitext(label)
 
-            assert ext == '.xml', f'File extension not supported on file {lbl_path}, expected .xml'
-
-            img_path = os.path.join(lbl_dir_path, label)
             xml_file = open(lbl_path, 'r')
             tree = ET.parse(xml_file)
             root = tree.getroot()
 
-            img_filename = root.find('filename').text
-            # compatibility with inconsistent labeling, take img name from lbl name instead
-            _, img_ext = os.path.splitext(img_filename)
-            img_path = os.path.join(image_dir_path, f'{lbl_name}{img_ext}')
+            # compatibility with inconsistent labeling, take img name from lbl name instead,  
+            # and try every possible combination of img name and supported ext
+            img_exist = False
+            for ext in SUPPORTED_EXT:
+                img_path = os.path.join(data_dir_path, f'{lbl_name}{ext}')
+                if os.path.exists(img_path):
+                    img_exist = True
+                    break
 
-            assert os.path.exists(img_path), f'File {img_path} does not exist'
+            if not img_exist:
+                assert False, f'Image for label {label} does not exist'
             
             width = int(root.find('.//width').text)
             height = int(root.find('.//height').text)
 
             objects = root.findall('.//object')
             
-            out_image_path = os.path.join(out_dir_images, f'{lbl_name}{img_ext}')
+            out_image_path = os.path.join(out_dir_images)
             out_label_path = os.path.join(out_dir_labels, f'{lbl_name}.txt')
 
             with open(out_label_path, 'w') as f:
