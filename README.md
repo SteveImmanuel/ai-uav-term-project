@@ -27,11 +27,12 @@ Download all the classes that you want to train of the dataset from NAS, and con
 │   ├── Sedan
 │   │   ├── Test
 │   │   └── Train
-│   └── Trailer Truck
-│       ├── Test
-│       └── Train
+│   ├── Trailer Truck
+│   |   ├── Test
+│   |   └── Train
+|   ... (Other classes should follow this structure too)
 ```
-Since the annotations were using PascalVOC format, we need to convert it into YOLO format. Fortunately, I have created the script to do that automatically. To do that type:
+Since the annotations were done using PascalVOC format, we need to convert it into YOLO format. Fortunately, I have created the script to do that automatically. To do that type:
 ```
 python pascal_voc_to_yolo.py
 ```
@@ -51,16 +52,21 @@ Found 400 labels in Train/Kickboard
 Found 100 labels in Test/Kickboard
 Found 400 labels in Train/Trailer Truck
 Found 100 labels in Test/Trailer Truck
-Generating training configuration file (train-config.yaml)
+Generated training configuration file (train-config.yaml)
 ```
 A new file `train-config.yaml` will be automatically generated in the project directory and this will be used for training.
 
 # Training
 For training, it is recommended to use pretrained weights. Type the following:
 ```
-python train.py --img 800 --batch 32 --epochs 300 --data train-config.yaml --weights yolov5s.pt
+python train.py --img 640 --batch 10 --epochs 300 --data train-config.yaml --weights yolov5x.pt
 ```
 Adjust the batch size and image dimension according to your system specification if you run out of memory.
 
+# Inference
+After training is complete, you can use the saved model to do inference on image or video by typing:
+```
+python detect.py --weights <PATH/TO/WEIGHTS> --source <PATH/TO/IMAGE/OR/VIDEO> --view-img
+```
 # Troubleshooting
 Please refer to the original documentation <a href=https://github.com/ultralytics/yolov5/wiki>here</a>.

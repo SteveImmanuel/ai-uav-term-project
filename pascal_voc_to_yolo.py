@@ -79,7 +79,6 @@ for index, obj_class in enumerate(classes):
 
             xml_file.close()
 
-print('Generating training configuration file (train-config.yaml)')
 # generate training config
 with open('train-config.yaml', 'w') as f:
     f.write(f'path: {out_dir}  # dataset root dir\n')
@@ -89,3 +88,4 @@ with open('train-config.yaml', 'w') as f:
 
     f.write(f'nc: {len(classes)}  # number of classes\n')
     f.write(f'names: {classes} # class names\n')
+print('Generated training configuration file (train-config.yaml)')
