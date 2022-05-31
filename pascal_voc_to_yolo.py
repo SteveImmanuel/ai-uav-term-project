@@ -7,6 +7,8 @@ SUPPORTED_EXT += [ext.upper() for ext in SUPPORTED_EXT]
 
 dataset_path = input('Dataset path: ')
 out_dir = input('Out directory: ')
+val_split = input('Validation split (0.2): ') or 0.2
+val_split = float(val_split)
 
 assert out_dir != '', f'Dataset path cannot be blank'
 assert out_dir != '', f'Out directory cannot be blank'
@@ -22,8 +24,14 @@ for index, obj_class in enumerate(classes):
         out_dir_labels = os.path.join(out_dir, data_type, 'labels')
         data_dir_path = os.path.join(dataset_path, obj_class, data_type)
 
+        # split dataset validation only from train folder due to how the dataset is structured
+        out_dir_images_val = os.path.join(out_dir, 'Validation', 'images')
+        out_dir_labels_val = os.path.join(out_dir, 'Validation', 'labels')
+
         os.makedirs(out_dir_images, exist_ok=True)
         os.makedirs(out_dir_labels, exist_ok=True)
+        os.makedirs(out_dir_images_val, exist_ok=True)
+        os.makedirs(out_dir_labels_val, exist_ok=True)
 
         assert os.path.exists(data_dir_path), f'Path {data_dir_path} does not exist'
 
@@ -33,7 +41,12 @@ for index, obj_class in enumerate(classes):
         assert len(labels) == len(images), f'Number of labels and images do not match, labels: {len(labels)}, images: {len(images)}'
         print(f'Found {len(labels)} datapoints in {data_type}/{obj_class}')
 
-        for label in labels:
+        max_idx = len(labels)
+        if data_type == 'Train':
+            max_idx = int((1 - val_split) * len(labels))
+            print(f'\tSplitting training datapoints into {max_idx} for training and {len(labels) - max_idx} for validation')
+
+        for idx, label in enumerate(labels):
             lbl_path = os.path.join(data_dir_path, label)
             lbl_name, _ = os.path.splitext(label)
 
@@ -58,8 +71,12 @@ for index, obj_class in enumerate(classes):
 
             objects = root.findall('.//object')
             
-            out_image_path = os.path.join(out_dir_images)
-            out_label_path = os.path.join(out_dir_labels, f'{lbl_name}.txt')
+            if idx < max_idx:
+                out_image_path = os.path.join(out_dir_images)
+                out_label_path = os.path.join(out_dir_labels, f'{lbl_name}.txt')
+            else:
+                out_image_path = os.path.join(out_dir_images_val)
+                out_label_path = os.path.join(out_dir_labels_val, f'{lbl_name}.txt')
 
             with open(out_label_path, 'w') as f:
                 for object in objects:
@@ -79,11 +96,12 @@ for index, obj_class in enumerate(classes):
 
             xml_file.close()
 
+
 # generate training config
 with open('train-config.yaml', 'w') as f:
     f.write(f'path: {out_dir}  # dataset root dir\n')
     f.write('train: Train/images  # train images (relative to "path")\n')
-    f.write('val: Test/images  # val images (relative to "path")\n')
+    f.write('val: Validation/images  # val images (relative to "path")\n')
     f.write('test: Test/images # test images (optional)\n\n')
 
     f.write(f'nc: {len(classes)}  # number of classes\n')
