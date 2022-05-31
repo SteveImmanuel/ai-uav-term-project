@@ -36,7 +36,7 @@ Since the annotations were done using PascalVOC format, we need to convert it in
 ```
 python pascal_voc_to_yolo.py
 ```
-It will ask for `Dataset path`, `Out directory`. `Validation split`.
+It will ask for `Dataset path`, `Out directory`, `Validation split`.
 - For `Dataset path`, enter the absolute path of the root dataset or the relative path from this project directory
 - For `Out directory`, enter a new path to store the result of the converted dataset. This can also be absolute or relative path.
 - For `Validation split`, enter the percentage of the dataset that will be used for validation. **Note:** This is calculated only from the `Train` folder, **regardless** of the `Test` folder. For example, train folder contains 100 images, validation 0.1 means that 90 images will be used for training and 10 will be used for validation.
