@@ -36,22 +36,25 @@ Since the annotations were done using PascalVOC format, we need to convert it in
 ```
 python pascal_voc_to_yolo.py
 ```
-It will ask for `Dataset path` and `Out directory`.
+It will ask for `Dataset path`, `Out directory`. `Validation split`.
 - For `Dataset path`, enter the absolute path of the root dataset or the relative path from this project directory
 - For `Out directory`, enter a new path to store the result of the converted dataset. This can also be absolute or relative path.
+- For `Validation split`, enter the percentage of the dataset that will be used for validation. **Note:** This is calculated only from the `Train` folder, **regardless** of the `Test` folder. For example, train folder contains 100 images, validation 0.1 means that 90 images will be used for training and 10 will be used for validation.
 
 If everything is correct, you should see similar result as the following:
 ```
-Dataset path: ../Downloads/mobility/Dataset
-Out directory: ../Downloads/mobility/out
-Found 400 labels in Train/Sedan
-Found 100 labels in Test/Sedan
-Found 400 labels in Train/Helicopter
-Found 100 labels in Test/Helicopter
-Found 400 labels in Train/Kickboard
-Found 100 labels in Test/Kickboard
-Found 400 labels in Train/Trailer Truck
-Found 100 labels in Test/Trailer Truck
+Dataset path: /home/steve/Downloads/Dataset/Raw
+Out directory: /home/steve/Downloads/Dataset/Formatted
+Validation split (0.2): 
+Found 400 datapoints in Train/Kickboard
+	Splitting training datapoints into 320 for training and 80 for validation
+Found 100 datapoints in Test/Kickboard
+...
+...
+...
+Found 400 datapoints in Train/Dump Truck
+	Splitting training datapoints into 320 for training and 80 for validation
+Found 100 datapoints in Test/Dump Truck
 Generated training configuration file (train-config.yaml)
 ```
 A new file `train-config.yaml` will be automatically generated in the project directory and this will be used for training.
@@ -63,10 +66,12 @@ python train.py --img 640 --batch 10 --epochs 300 --data train-config.yaml --wei
 ```
 Adjust the batch size and image dimension according to your system specification if you run out of memory.
 
+By default, the model weights will be saved under `runs/train/exp/weights` directory.
+
 # Inference
-After training is complete, you can use the saved model to do inference on image or video by typing:
+After training has completed, you can use the saved model to do inference on image or video by typing:
 ```
-python detect.py --weights <PATH/TO/WEIGHTS> --source <PATH/TO/IMAGE/OR/VIDEO> --view-img
+python detect.py --weights <PATH/TO/WEIGHTS> --source <PATH/TO/IMAGE/OR/VIDEO>
 ```
 # Troubleshooting
 Please refer to the original documentation <a href=https://github.com/ultralytics/yolov5/wiki>here</a>.
