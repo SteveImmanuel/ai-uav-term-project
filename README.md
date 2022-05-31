@@ -75,3 +75,8 @@ python detect.py --weights <PATH/TO/WEIGHTS> --source <PATH/TO/IMAGE/OR/VIDEO>
 ```
 # Troubleshooting
 Please refer to the original documentation <a href=https://github.com/ultralytics/yolov5/wiki>here</a>.
+
+# Credits
+This code is forked from https://github.com/ultralytics/yolov5 with some minor modifications.
+
+Steve ©2022
