@@ -43,9 +43,9 @@ It will ask for `Dataset path`, `Out directory`, `Validation split`.
 
 If everything is correct, you should see similar result as the following:
 ```
-Dataset path: /home/steve/Downloads/Dataset/Raw
-Out directory: /home/steve/Downloads/Dataset/Formatted
-Validation split (0.2): 
+Dataset path: <PATH/TO/DATASET>
+Out directory: <PATH/TO/OUTPUT/DIR>
+Validation split (0.2): 0.2
 Found 400 datapoints in Train/Kickboard
 	Splitting training datapoints into 320 for training and 80 for validation
 Found 100 datapoints in Test/Kickboard
