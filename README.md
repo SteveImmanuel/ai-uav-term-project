@@ -73,6 +73,7 @@ After training has completed, you can use the saved model to do inference on ima
 ```
 python detect.py --weights <PATH/TO/WEIGHTS> --source <PATH/TO/IMAGE/OR/VIDEO>
 ```
+Results will be saved under `runs/detect/exp/` directory.
 # Troubleshooting
 Please refer to the original documentation <a href=https://github.com/ultralytics/yolov5/wiki>here</a>.
 
